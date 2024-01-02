@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+
+<body>
+
+    <h1>Basket Illusion Designer</h1>
+
+    <fieldset>
+        <legend>Select your measurement unit</legend>
+        <input type="radio" name="unit" id="inch" value="in" checked />
+        <label for="inch">inch</label>
+        <input type="radio" name="unit" id="centimeters" value="cm" />
+        <label for="centimeters">cm</label>
+        <br>
+        <label for="max_diam">Max circle diam</label>
+        <input id="max_diam" type="number" value="10" /><br>
+
+        <label for="min_diam">Min circle diam</label>
+        <input id="min_diam" type="number" value="2" /><br>
+
+        <label for="spacing">Circle spacing</label>
+        <input id="spacing" type="number" value="0.25" /><br>
+
+        <label for="angle">Line angle:</label>
+        <input id="angle" name="angle" type="number" value="10" max="360" /><br>
+
+        <input type="submit" value="Submit" onClick="JavaScript:drawAll()">
+
+
+    </fieldset>
+    <br>
+    <canvas id="myCanvas" width="800" height="800" style="border:1px solid #000000;">
+    </canvas>
+
+    <script src="basket.js"></script>
+</body>
+
+</html>
