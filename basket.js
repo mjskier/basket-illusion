@@ -1,39 +1,54 @@
-var canvas = document.getElementById('myCanvas')
-var ctx = canvas.getContext('2d')
 
-var width = canvas.width;
-var height = canvas.height;
+// Basket constructor
+function Basket(canvas) {
+    this.canvas = canvas;
+    this.ctx = canvas.getContext('2d');
+    this.width = canvas.width;
+    this.height = canvas.height;
 
-var center_x = canvas.width / 2;
-var center_y = canvas.height / 2;
+    this.center_x = canvas.width / 2;
+    this.center_y = canvas.height / 2;
 
-var largest_diam = canvas.width;
-var smallest_diam = 20;
-var circle_spacing = 15;
+    this.largest_diam = canvas.width;
+    this.smallest_diam = 20;
+    this.circle_spacing = 15;
+}
 
-// drawCircles(center_x, center_y, width, circle_spacing, pixel_per_unit, num_circles);
+// Clear the canvas
+Basket.prototype.clearAll = function () {
+    // clear up any left over lines and circles
+    this.ctx.clearRect(0, 0, this.width, this.height);
+}
 
-function drawCircles(center_x, center_y, largest_diam, circle_spacing, pixel_per_unit, num_circles) {
-    rad_decrement = circle_spacing * pixel_per_unit;
-
-    for (i = largest_diam / 2, n = 0; n < num_circles / 2; i = i - rad_decrement, n += 1) {
-        ctx.beginPath();
-        ctx.arc(center_x, center_y, i, 0, 2 * Math.PI, false);
-        ctx.fillStyle = '#DFD7C8';
-        ctx.fill()
-        ctx.lineWidth = 3;
-        ctx.strokeStyle = '#003300';
-        ctx.stroke();
+// Draw the radial lines
+Basket.prototype.drawLines = function () {
+    for (i = 0; i < 360; i += this.line_angle) {
+        drawLine(this.ctx, 'red', 2, i, this.largest_diam / 2, this.smallest_radius);
     }
 }
 
-function drawLines(angle, large_radius, small_radius) {
-    for (i = 0; i < 360; i += angle) {
-        drawLine('red', 2, i, large_radius, small_radius);
+Basket.prototype.drawCircles = function () {
+    rad_decrement = this.circle_spacing * this.pixel_per_unit;
+
+    for (i = this.largest_diam / 2, n = 0; n < this.num_circles / 2; i = i - rad_decrement, n += 1) {
+        this.ctx.beginPath();
+        this.ctx.arc(this.center_x, this.center_y, i, 0, 2 * Math.PI, false);
+        this.ctx.fillStyle = '#DFD7C8';
+        this.ctx.fill()
+        this.ctx.lineWidth = 3;
+        this.ctx.strokeStyle = '#003300';
+        this.ctx.stroke();
+    }
+}
+// Draw the radial lines
+Basket.prototype.drawLines = function () {
+    for (i = 0; i < 360; i += this.line_angle) {
+        drawLine(this.ctx, 'red', 2, i, this.largest_diam / 2, this.smallest_radius);
     }
 }
 
-function drawLine(color, width, angle, large_radius, small_radius) {
+function drawLine(ctx, color, width, angle, large_radius, small_radius) {
+
     ctx.strokeStyle = color;
     ctx.lineWidth = width;
 
@@ -43,21 +58,17 @@ function drawLine(color, width, angle, large_radius, small_radius) {
     var x2 = large_radius + large_radius * Math.cos(-angle * Math.PI / 180)
     var y2 = large_radius + large_radius * Math.sin(-angle * Math.PI / 180)
 
-    // console.log('line_x: %d', x);
-    // console.log('line_y: %d', y);
-
     ctx.beginPath();
-    // ctx.moveTo(center_x, center_y)
     ctx.moveTo(x1, y1)
     ctx.lineTo(x2, y2);
-    // ctx.lineTo(x1, y1);
     ctx.stroke();
 }
 
 function drawAll() {
 
-    // clear up any left over lines and circles
-    ctx.clearRect(0, 0, width, height);
+    var basket = new Basket(document.getElementById('myCanvas'));
+
+    basket.clearAll();
 
     var unit = ""
     var selectedUnit = document.querySelector('input[name="unit"]:checked');
@@ -65,19 +76,21 @@ function drawAll() {
         unit = selectedUnit.value
     }
 
-    var max_diam = document.getElementById('max_diam').value;
-    var min_diam = document.getElementById('min_diam').value;
-    var circle_spacing = document.getElementById('spacing').value;
-    var line_angle = document.getElementById('angle').value;
+    basket.max_diam = Number(document.getElementById('max_diam').value);
+    basket.min_diam = Number(document.getElementById('min_diam').value);
 
+    basket.circle_spacing = Number(document.getElementById('spacing').value);
+    basket.line_angle = Number(document.getElementById('angle').value);
 
-    // need to map diameters to pixels
-    pixel_per_unit = width / max_diam;
-    num_circles = (max_diam - min_diam) / circle_spacing;
+    // map diameters to pixels
 
-    drawCircles(center_x, center_y, width, Number(circle_spacing), pixel_per_unit, num_circles);
+    basket.pixel_per_unit = basket.width / basket.max_diam;
+    basket.num_circles = (basket.max_diam - basket.min_diam) / basket.circle_spacing;
 
-    smallest_radius = (Number(min_diam) + 0.5) * pixel_per_unit / 2;
-    drawLines(Number(line_angle), largest_diam / 2, smallest_radius);
+    basket.smallest_radius = (basket.min_diam + 0.5) * basket.pixel_per_unit / 2;
+
+    basket.drawCircles();
+    basket.drawLines();
+
 }
 
